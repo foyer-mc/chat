@@ -9,6 +9,8 @@ import lombok.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
+import cool.foyer.chat.Markup;
+
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 @Getter
@@ -22,7 +24,7 @@ public class Channel {
     }
 
     public void broadcast(String sender, String message) {
-        var fmt = this.format(sender, message);
+        var fmt = this.format(sender, Markup.format(message));
         for (var recipient : this.recipients) {
             recipient.sendMessage(fmt);
         }
