@@ -38,8 +38,18 @@ public class Channel {
     public void broadcast(String sender, String message) {
         var fmt = this.format(sender, Markup.format(message));
         for (var recipient : this.recipients) {
-            recipient.sendMessage(fmt);
+            if (recipient.hasPermission(permission(Permission.READ))) {
+                recipient.sendMessage(fmt);
+            }
         }
     }
 
+    public String permission(Permission type) {
+        return "foyer.chat." + name + "." + type.toString().toLowerCase();
+    }
+
+    public enum Permission {
+        SPEAK,
+        READ,
+    }
 }

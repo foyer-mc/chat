@@ -54,17 +54,23 @@ public class ChatHandler implements Listener {
             return;
         }
 
+        event.setCancelled(true);
+
         var player = (ProxiedPlayer) sender;
         var msg = ChatColor.stripColor(event.getMessage());
         var chat = this.plugin.chats().get(player);
         var chan = this.plugin.channels().get(chat.focus());
 
         if (chan == null) {
+            player.sendMessage("§cAucun canal sélectionné.§r");
             return;
         }
 
+        if (!player.hasPermission(chan.permission(Channel.Permission.SPEAK))) {
+            player.sendMessage("§cVous n'avez pas la permission de parler sur ce canal.§r");
+            return;
+        }
         chan.broadcast(player.getName(), msg);
-        event.setCancelled(true);
     }
 
 }
