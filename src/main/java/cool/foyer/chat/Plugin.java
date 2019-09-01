@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.experimental.Accessors;
@@ -25,7 +26,9 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
     private final Map<String, Channel> channels = new HashMap<>();
     private Configuration config;
 
-    public static String DEFAULT_TEMPLATE;
+    private String defaultTemplate;
+    private List<String> defaultChannels;
+    private String defaultFocus;
 
     private void loadConfig() {
         var datadir = getDataFolder();
@@ -47,7 +50,9 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             e.printStackTrace();
         }
 
-        DEFAULT_TEMPLATE = config.getString("template");
+        defaultTemplate = config.getString("template");
+        defaultChannels = config.getStringList("default_channels");
+        defaultFocus    = config.getString("default_focus");
     }
 
     @Override
@@ -57,7 +62,7 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         var chansconfig = config.getSection("channels");
         for (var name : chansconfig.getKeys()) {
             var chanconfig = chansconfig.getSection(name);
-            var template = chanconfig.getString("template", DEFAULT_TEMPLATE);
+            var template = chanconfig.getString("template", defaultTemplate);
 
             var chan = new Channel(name)
                 .template(template);
