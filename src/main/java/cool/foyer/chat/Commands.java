@@ -25,7 +25,7 @@ public class Commands extends BaseCommand {
     @Subcommand("switch")
     @CommandCompletion("@channels")
     public void cmdSwitch(Chat chat, Channel chan) {
-        chat.focus(chan.toString());
+        chat.focus(chan);
     }
 
     @Subcommand("list")

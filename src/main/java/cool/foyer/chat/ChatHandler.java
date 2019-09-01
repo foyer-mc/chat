@@ -26,8 +26,7 @@ public class ChatHandler implements Listener {
         chat.focus(plugin.defaultFocus());
 
         var defaults = plugin.defaultChannels();
-        for (var chanName : defaults) {
-            var chan = this.plugin.channels().get(chanName);
+        for (var chan : defaults) {
             chan.recipients().add(player);
             chat.channels().add(chan);
         }
@@ -60,7 +59,7 @@ public class ChatHandler implements Listener {
         var player = (ProxiedPlayer) sender;
         var msg = ChatColor.stripColor(event.getMessage());
         var chat = this.plugin.chats().get(player);
-        var chan = this.plugin.channels().get(chat.focus());
+        var chan = chat.focus();
 
         if (chan == null) {
             player.sendMessage("§cAucun canal sélectionné.§r");

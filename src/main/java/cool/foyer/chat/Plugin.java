@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,8 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
     private Configuration config;
 
     private String defaultTemplate;
-    private List<String> defaultChannels;
-    private String defaultFocus;
+    private List<Channel> defaultChannels = new ArrayList<>();
+    private Channel defaultFocus;
 
     private void loadConfig() {
         var datadir = getDataFolder();
@@ -57,8 +58,6 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         }
 
         defaultTemplate = config.getString("template");
-        defaultChannels = config.getStringList("default_channels");
-        defaultFocus    = config.getString("default_focus");
     }
 
     @Override
@@ -74,6 +73,10 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
                 .template(template);
             channels.put(name, chan);
         }
+        for (var name : config.getStringList("default_channels")) {
+            defaultChannels.add(channels.get(name));
+        }
+        defaultFocus = channels.get(config.getString("default_focus"));
 
         var pm = getProxy().getPluginManager();
         pm.registerListener(this, new ChatHandler(this));
