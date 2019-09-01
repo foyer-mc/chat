@@ -4,7 +4,10 @@ default_channels:
 
 default_focus: global
 
+template: '[${channel}] ${sender}: ${message}'
+
 channels:
   system:
+    template: '[${channel}] ${message}'
   global:
   staff:

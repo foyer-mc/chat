@@ -25,6 +25,8 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
     private final Map<String, Channel> channels = new HashMap<>();
     private Configuration config;
 
+    public static String DEFAULT_TEMPLATE;
+
     private void loadConfig() {
         var datadir = getDataFolder();
         var file = new File(datadir, "config.yml");
@@ -44,15 +46,22 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        DEFAULT_TEMPLATE = config.getString("template");
     }
 
     @Override
     public void onEnable() {
         loadConfig();
 
-        var chanconfig = config.getSection("channels");
-        for (var name : chanconfig.getKeys()) {
-            channels.put(name, new Channel(name));
+        var chansconfig = config.getSection("channels");
+        for (var name : chansconfig.getKeys()) {
+            var chanconfig = chansconfig.getSection(name);
+            var template = chanconfig.getString("template", DEFAULT_TEMPLATE);
+
+            var chan = new Channel(name)
+                .template(template);
+            channels.put(name, chan);
         }
 
         var pm = getProxy().getPluginManager();

@@ -1,10 +1,13 @@
 package cool.foyer.chat;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
 import lombok.experimental.Accessors;
 import lombok.*;
+
+import org.apache.commons.text.StringSubstitutor;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -13,14 +16,23 @@ import cool.foyer.chat.Markup;
 
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-@Getter
+@Data
 public class Channel {
 
     private final String name;
     private final Set<CommandSender> recipients = new HashSet<>();
 
+    @NonNull
+    private String template = "[${channel}] <${sender}> ${message}";
+
     public String format(String sender, String message) {
-        return "[" + name + "] " + sender + ": " + message;
+        var params = Map.of(
+            "channel", name,
+            "sender", sender,
+            "message", message
+        );
+        var subst = new StringSubstitutor(params);
+        return subst.replace(template);
     }
 
     public void broadcast(String sender, String message) {
