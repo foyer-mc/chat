@@ -33,12 +33,13 @@ public class ChatHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onLogin(PlayerDisconnectEvent event) {
+    public void onLogout(PlayerDisconnectEvent event) {
         var player = event.getPlayer();
         this.plugin.channels()
             .values()
             .stream()
             .map(ch -> ch.recipients().remove(player));
+        this.plugin.chats().remove(player);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
