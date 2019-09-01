@@ -29,14 +29,15 @@ public class ChatHandler implements Listener {
         for (var chanName : defaults) {
             var chan = this.plugin.channels().get(chanName);
             chan.recipients().add(player);
+            chat.channels().add(chan);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onLogout(PlayerDisconnectEvent event) {
         var player = event.getPlayer();
-        this.plugin.channels()
-            .values()
+        var chat = this.plugin.chats().get(player);
+        chat.channels()
             .stream()
             .map(ch -> ch.recipients().remove(player));
         this.plugin.chats().remove(player);

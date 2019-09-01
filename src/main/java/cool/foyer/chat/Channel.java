@@ -44,6 +44,10 @@ public class Channel {
         }
     }
 
+    public String toString() {
+        return name;
+    }
+
     public String permission(Permission type) {
         return "foyer.chat." + name + "." + type.toString().toLowerCase();
     }

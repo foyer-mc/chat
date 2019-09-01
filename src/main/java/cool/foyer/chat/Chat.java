@@ -1,6 +1,8 @@
 package cool.foyer.chat;
 
 import java.lang.String;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.experimental.Accessors;
 import lombok.*;
@@ -14,5 +16,6 @@ public class Chat {
 
     private final ProxiedPlayer player;
     private String focus;
+    private final Set<Channel> channels = new HashSet<>();
 
 }

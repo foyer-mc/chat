@@ -7,9 +7,14 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.experimental.Accessors;
 import lombok.*;
+
+import co.aikar.commands.BungeeCommandManager;
+import co.aikar.commands.InvalidCommandArgument;
+import co.aikar.commands.MessageKeys;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -17,6 +22,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import cool.foyer.chat.ChatHandler;
+import cool.foyer.chat.Commands;
 
 @Accessors(fluent = true)
 @Getter
@@ -71,6 +77,35 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
 
         var pm = getProxy().getPluginManager();
         pm.registerListener(this, new ChatHandler(this));
+
+        var cmdManager = new BungeeCommandManager(this);
+
+        cmdManager.getCommandContexts().registerContext(Channel.class, c -> {
+            var chan = channels.get(c.popFirstArg());
+            if (chan == null) {
+                throw new InvalidCommandArgument("Canal non-existant.", false);
+            }
+            return chan;
+        });
+
+        cmdManager.getCommandContexts().registerIssuerAwareContext(Chat.class, c -> {
+            var sender = c.getSender();
+            var player = sender instanceof ProxiedPlayer ? (ProxiedPlayer) sender : null;
+            if (player == null) {
+                throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
+            }
+            return chats.get(player);
+        });
+
+        cmdManager.getCommandCompletions().registerCompletion("channels", c -> {
+            ProxiedPlayer player = c.getIssuer().getIssuer();
+            var chat = chats.get(player);
+            return chat.channels().stream()
+                .map(Channel::toString)
+                .collect(Collectors.toSet());
+        });
+
+        cmdManager.registerCommand(new Commands(this));
     }
 
 }
