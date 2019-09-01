@@ -1,0 +1,10 @@
+default_channels:
+- system
+- global
+
+default_focus: global
+
+channels:
+  system:
+  global:
+  staff:

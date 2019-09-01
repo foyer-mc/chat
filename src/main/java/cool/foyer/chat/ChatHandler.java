@@ -23,8 +23,13 @@ public class ChatHandler implements Listener {
     public void onLogin(PostLoginEvent event) {
         var player = event.getPlayer();
         var chat = this.plugin.chats().computeIfAbsent(player, p -> new Chat(p));
-        var chan = this.plugin.channels().get("global");
-        chan.recipients().add(player);
+        chat.focus(plugin.config().getString("default_focus"));
+
+        var defaults = plugin.config().getStringList("default_channels");
+        for (var chanName : defaults) {
+            var chan = this.plugin.channels().get(chanName);
+            chan.recipients().add(player);
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
