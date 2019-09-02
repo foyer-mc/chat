@@ -30,7 +30,7 @@ import cool.foyer.chat.Commands;
 @Getter
 public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
 
-    private final Map<ProxiedPlayer, Chat> chats = new HashMap<>();
+    private final Map<ProxiedPlayer, Chatter> chatters = new HashMap<>();
     private final Map<String, Channel> channels = new HashMap<>();
     private Configuration config;
 
@@ -98,18 +98,18 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             return chan;
         });
 
-        cmdManager.getCommandContexts().registerIssuerAwareContext(Chat.class, c -> {
+        cmdManager.getCommandContexts().registerIssuerAwareContext(Chatter.class, c -> {
             var sender = c.getSender();
             var player = sender instanceof ProxiedPlayer ? (ProxiedPlayer) sender : null;
             if (player == null) {
                 throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
             }
-            return chats.get(player);
+            return chatters.get(player);
         });
 
         cmdManager.getCommandCompletions().registerCompletion("channels", c -> {
             ProxiedPlayer player = c.getIssuer().getIssuer();
-            var chat = chats.get(player);
+            var chat = chatters.get(player);
             return chat.channels().stream()
                 .filter(ch -> player.hasPermission(ch.permission(Channel.Permission.READ)))
                 .map(Channel::toString)
@@ -118,7 +118,7 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
 
         cmdManager.getCommandCompletions().registerCompletion("channels_joinable", c -> {
             ProxiedPlayer player = c.getIssuer().getIssuer();
-            var chat = chats.get(player);
+            var chat = chatters.get(player);
             return channels.values().stream()
                 .filter(ch -> player.hasPermission(ch.permission(Channel.Permission.READ)))
                 .filter(ch -> !chat.channels().contains(ch))

@@ -25,11 +25,11 @@ public class Commands extends BaseCommand {
 
     @Subcommand("switch")
     @CommandCompletion("@channels")
-    public void cmdSwitch(Chat chat, Channel chan) {
-        if (!chat.channels().contains(chan)) {
+    public void cmdSwitch(Chatter chatter, Channel chan) {
+        if (!chatter.channels().contains(chan)) {
             throw new InvalidCommandArgument("Canal non-rejoint.", false);
         }
-        chat.focus(chan);
+        chatter.focus(chan);
     }
 
     @Subcommand("list")
@@ -42,25 +42,25 @@ public class Commands extends BaseCommand {
 
     @Subcommand("join")
     @CommandCompletion("@channels_joinable")
-    public void cmdJoin(Chat chat, Channel chan) {
-        if (!chat.player().hasPermission(chan.permission(Channel.Permission.READ))) {
+    public void cmdJoin(Chatter chatter, Channel chan) {
+        if (!chatter.player().hasPermission(chan.permission(Channel.Permission.READ))) {
             throw new InvalidCommandArgument("Canal non-existant.", false);
         }
-        chan.recipients().add(chat.player());
-        chat.channels().add(chan);
-        chat.focus(chan);
+        chan.recipients().add(chatter.player());
+        chatter.channels().add(chan);
+        chatter.focus(chan);
     }
 
     @Subcommand("leave")
     @CommandCompletion("@channels")
-    public void cmdLeave(Chat chat, @Optional Channel chan) {
+    public void cmdLeave(Chatter chatter, @Optional Channel chan) {
         if (chan == null) {
-            chan = chat.focus();
+            chan = chatter.focus();
         }
-        chat.channels().remove(chan);
-        chan.recipients().remove(chat.player());
-        if (chan == chat.focus()) {
-            chat.focus(plugin.defaultFocus());
+        chatter.channels().remove(chan);
+        chan.recipients().remove(chatter.player());
+        if (chan == chatter.focus()) {
+            chatter.focus(plugin.defaultFocus());
         }
     }
 

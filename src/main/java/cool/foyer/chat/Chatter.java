@@ -12,7 +12,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 @Data
-public class Chat {
+public class Chatter {
 
     private final ProxiedPlayer player;
     private Channel focus;

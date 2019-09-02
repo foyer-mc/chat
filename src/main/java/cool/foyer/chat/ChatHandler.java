@@ -26,24 +26,24 @@ public class ChatHandler implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onLogin(PostLoginEvent event) {
         var player = event.getPlayer();
-        var chat = this.plugin.chats().computeIfAbsent(player, p -> new Chat(p));
-        chat.focus(plugin.defaultFocus());
+        var chatter = this.plugin.chatters().computeIfAbsent(player, p -> new Chatter(p));
+        chatter.focus(plugin.defaultFocus());
 
         var defaults = plugin.defaultChannels();
         for (var chan : defaults) {
             chan.recipients().add(player);
-            chat.channels().add(chan);
+            chatter.channels().add(chan);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onLogout(PlayerDisconnectEvent event) {
         var player = event.getPlayer();
-        var chat = this.plugin.chats().get(player);
-        chat.channels()
+        var chatter = this.plugin.chatters().get(player);
+        chatter.channels()
             .stream()
             .map(ch -> ch.recipients().remove(player));
-        this.plugin.chats().remove(player);
+        this.plugin.chatters().remove(player);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -86,8 +86,8 @@ public class ChatHandler implements Listener {
             return;
         }
 
-        var chat = this.plugin.chats().get(player);
-        var chan = chat.focus();
+        var chatter = this.plugin.chatters().get(player);
+        var chan = chatter.focus();
 
         if (chan == null) {
             player.sendMessage("§cAucun canal sélectionné.§r");
