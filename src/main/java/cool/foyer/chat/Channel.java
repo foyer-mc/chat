@@ -24,10 +24,13 @@ public class Channel {
 
     @NonNull
     private String template = "[${channel}] <${sender}> ${message}";
+    @NonNull
+    private ChatColor color = ChatColor.WHITE;
 
     public String format(String sender, String message) {
         var params = Map.of(
             "channel", name,
+            "color", color.toString(),
             "sender", sender,
             "message", message
         );

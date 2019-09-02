@@ -4,10 +4,13 @@ default_channels:
 
 default_focus: global
 
-template: '[${channel}] ${sender}: ${message}'
+template: '[${color}${channel}§r] ${sender}: ${message}'
 
 channels:
   system:
-    template: '[${channel}] ${message}'
+    template: '[${color}${channel}§r] ${message}'
+    color: red
   global:
+    color: green
   staff:
+    color: gold

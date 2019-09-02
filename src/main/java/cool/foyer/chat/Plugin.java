@@ -17,6 +17,7 @@ import co.aikar.commands.BungeeCommandManager;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -60,18 +61,22 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         defaultTemplate = config.getString("template");
     }
 
+    private Channel loadChannel(String name, Configuration config) {
+        var template = config.getString("template", defaultTemplate);
+        var color = ChatColor.valueOf(config.getString("color", "white").toUpperCase());
+
+        return new Channel(name)
+            .template(template)
+            .color(color);
+    }
+
     @Override
     public void onEnable() {
         loadConfig();
 
         var chansconfig = config.getSection("channels");
         for (var name : chansconfig.getKeys()) {
-            var chanconfig = chansconfig.getSection(name);
-            var template = chanconfig.getString("template", defaultTemplate);
-
-            var chan = new Channel(name)
-                .template(template);
-            channels.put(name, chan);
+            channels.put(name, loadChannel(name, chansconfig.getSection(name)));
         }
         for (var name : config.getStringList("default_channels")) {
             defaultChannels.add(channels.get(name));
