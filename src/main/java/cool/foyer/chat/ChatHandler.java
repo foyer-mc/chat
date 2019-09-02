@@ -80,7 +80,9 @@ public class ChatHandler implements Listener {
                 var subst = new StringSubstitutor(params);
                 msg = subst.replace(this.plugin.pmTemplate());
 
-                recipient.sendMessage(msg);
+                if (!recipient.equals(player)) {
+                    recipient.sendMessage(msg);
+                }
                 player.sendMessage(msg);
             }
             return;
