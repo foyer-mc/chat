@@ -37,6 +37,7 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
     private String defaultTemplate;
     private List<Channel> defaultChannels = new ArrayList<>();
     private Channel defaultFocus;
+    private String pmTemplate;
 
     private void loadConfig() {
         var datadir = getDataFolder();
@@ -59,6 +60,7 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         }
 
         defaultTemplate = config.getString("template");
+        pmTemplate = config.getString("pm_template");
     }
 
     private Channel loadChannel(String name, Configuration config) {

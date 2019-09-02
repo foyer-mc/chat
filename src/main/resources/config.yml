@@ -5,6 +5,7 @@ default_channels:
 default_focus: global
 
 template: '[${color}${channel}§r] ${sender}: ${message}'
+pm_template: '§b${sender} -> ${recipient}§r: ${message}'
 
 channels:
   system:

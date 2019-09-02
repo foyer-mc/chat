@@ -1,10 +1,14 @@
 package cool.foyer.chat;
 
 import java.lang.String;
+import java.util.Map;
 
 import lombok.*;
 
+import org.apache.commons.text.StringSubstitutor;
+
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -58,6 +62,30 @@ public class ChatHandler implements Listener {
 
         var player = (ProxiedPlayer) sender;
         var msg = ChatColor.stripColor(event.getMessage());
+
+        if (msg.charAt(0) == '@') {
+            var split = msg.split(" ", 2);
+            var recipientName = split[0].substring(1);
+            msg = split[1];
+
+            var recipient = ProxyServer.getInstance().getPlayer(recipientName);
+            if (recipient == null) {
+                player.sendMessage("§cDestinataire hors-ligne.§r");
+            } else {
+                var params = Map.of(
+                    "sender", player.getName(),
+                    "recipient", recipientName,
+                    "message", msg
+                );
+                var subst = new StringSubstitutor(params);
+                msg = subst.replace(this.plugin.pmTemplate());
+
+                recipient.sendMessage(msg);
+                player.sendMessage(msg);
+            }
+            return;
+        }
+
         var chat = this.plugin.chats().get(player);
         var chan = chat.focus();
 
