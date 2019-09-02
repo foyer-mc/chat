@@ -111,6 +111,17 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             ProxiedPlayer player = c.getIssuer().getIssuer();
             var chat = chats.get(player);
             return chat.channels().stream()
+                .filter(ch -> player.hasPermission(ch.permission(Channel.Permission.READ)))
+                .map(Channel::toString)
+                .collect(Collectors.toSet());
+        });
+
+        cmdManager.getCommandCompletions().registerCompletion("channels_joinable", c -> {
+            ProxiedPlayer player = c.getIssuer().getIssuer();
+            var chat = chats.get(player);
+            return channels.values().stream()
+                .filter(ch -> player.hasPermission(ch.permission(Channel.Permission.READ)))
+                .filter(ch -> !chat.channels().contains(ch))
                 .map(Channel::toString)
                 .collect(Collectors.toSet());
         });

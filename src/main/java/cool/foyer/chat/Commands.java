@@ -41,7 +41,7 @@ public class Commands extends BaseCommand {
     }
 
     @Subcommand("join")
-    @CommandCompletion("@channels")
+    @CommandCompletion("@channels_joinable")
     public void cmdJoin(Chat chat, Channel chan) {
         if (!chat.player().hasPermission(chan.permission(Channel.Permission.READ))) {
             throw new InvalidCommandArgument("Canal non-existant.", false);

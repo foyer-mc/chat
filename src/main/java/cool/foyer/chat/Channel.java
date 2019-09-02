@@ -17,8 +17,10 @@ import cool.foyer.chat.Markup;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Channel {
 
+    @EqualsAndHashCode.Include
     private final String name;
     private final Set<CommandSender> recipients = new HashSet<>();
 
