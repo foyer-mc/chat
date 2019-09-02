@@ -1,6 +1,7 @@
 package cool.foyer.chat;
 
 import java.lang.String;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,5 +18,11 @@ public class Chatter {
     private final ProxiedPlayer player;
     private Channel focus;
     private final Set<Channel> channels = new HashSet<>();
+    @NonNull
+    private Instant mutedUntil = Instant.MIN;
+
+    public boolean muted() {
+        return mutedUntil.isAfter(Instant.now());
+    }
 
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -98,10 +101,45 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             return chan;
         });
 
+        cmdManager.getCommandContexts().registerContext(Duration.class, c -> {
+            var dur = c.popFirstArg();
+
+            var suffixes = Map.of(
+                'h', ChronoUnit.HOURS,
+                'm', ChronoUnit.MINUTES,
+                's', ChronoUnit.SECONDS
+            );
+
+            Duration duration = Duration.ZERO;
+            int start = 0;
+            int pos = 0;
+
+            try {
+                for (var suffix : suffixes.entrySet()) {
+                    pos = dur.indexOf(suffix.getKey(), start);
+                    if (pos == -1) {
+                        continue;
+                    }
+                    long amount = Long.parseLong(dur.substring(start, pos));
+                    duration = duration.plus(amount, suffix.getValue());
+                    start = pos + 1;
+                }
+            } catch (NumberFormatException ex) {
+                throw new InvalidCommandArgument("'" + dur.substring(start, pos) + "' n'est pas une durée valide.", true);
+            }
+
+            return duration;
+        });
+
         cmdManager.getCommandContexts().registerIssuerAwareContext(Chatter.class, c -> {
             var sender = c.getSender();
             var player = sender instanceof ProxiedPlayer ? (ProxiedPlayer) sender : null;
-            if (player == null) {
+            if (c.hasFlag("other")) {
+                player = ProxyServer.getInstance().getPlayer(c.popFirstArg());
+                if (player == null) {
+                    throw new InvalidCommandArgument("Joueur non connecté", false);
+                }
+            } else if (player == null) {
                 throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
             }
             return chatters.get(player);

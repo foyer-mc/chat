@@ -94,6 +94,11 @@ public class ChatHandler implements Listener {
             return;
         }
 
+        if (chatter.muted()) {
+            player.sendMessage("§cVous avez été rendu muet.§r");
+            return;
+        }
+
         if (!player.hasPermission(chan.permission(Channel.Permission.SPEAK))) {
             player.sendMessage("§cVous n'avez pas la permission de parler sur ce canal.§r");
             return;

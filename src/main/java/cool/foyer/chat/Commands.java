@@ -1,6 +1,9 @@
 package cool.foyer.chat;
 
 import java.lang.String;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import lombok.*;
 
@@ -62,6 +65,23 @@ public class Commands extends BaseCommand {
         if (chan == chatter.focus()) {
             chatter.focus(plugin.defaultFocus());
         }
+    }
+
+    @Subcommand("mute")
+    @CommandPermission("foyer.chat.mute")
+    @CommandCompletion("@players")
+    public void cmdMute(@Flags("other") Chatter target, @Optional Duration duration) {
+        if (duration == null) {
+            duration = ChronoUnit.FOREVER.getDuration();
+        }
+        target.mutedUntil(Instant.now().plus(duration));
+    }
+
+    @Subcommand("unmute")
+    @CommandPermission("foyer.chat.mute")
+    @CommandCompletion("@players")
+    public void cmdUnmute(@Flags("other") Chatter target) {
+        target.mutedUntil(Instant.MIN);
     }
 
 }
