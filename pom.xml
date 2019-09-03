@@ -8,6 +8,7 @@
     <groupId>cool.foyer</groupId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
+    <inceptionYear>2019</inceptionYear>
 
     <repositories>
         <repository>
@@ -24,6 +25,19 @@
             <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
+
+    <organization>
+        <name>Foyer</name>
+        <url>https://foyer.cool/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL) version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <maven.compiler.source>1.9</maven.compiler.source>
@@ -107,6 +121,32 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <header>HEADER</header>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin-git</artifactId>
+                        <version>3.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
