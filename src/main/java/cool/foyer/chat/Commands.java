@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import lombok.*;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.CommandHelp;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 
@@ -24,6 +25,11 @@ public class Commands extends BaseCommand {
     public Commands(Plugin plugin) {
         super("chat");
         this.plugin = plugin;
+    }
+
+    @HelpCommand
+    public void help(CommandSender sender, CommandHelp help) {
+        help.showHelp();
     }
 
     @Subcommand("switch")

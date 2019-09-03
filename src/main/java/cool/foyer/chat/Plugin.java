@@ -93,6 +93,8 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
 
         var cmdManager = new BungeeCommandManager(this);
 
+        cmdManager.enableUnstableAPI("help");
+
         cmdManager.getCommandContexts().registerContext(Channel.class, c -> {
             var chan = channels.get(c.popFirstArg());
             if (chan == null) {
