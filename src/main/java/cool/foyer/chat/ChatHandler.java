@@ -70,7 +70,7 @@ public class ChatHandler implements Listener {
 
             var recipient = ProxyServer.getInstance().getPlayer(recipientName);
             if (recipient == null) {
-                player.sendMessage("§cDestinataire hors-ligne.§r");
+                plugin.error(player, Messages.RECIPIENT_OFFLINE, "{recipient}", recipientName);
             } else {
                 var params = Map.of(
                     "sender", player.getName(),
@@ -92,17 +92,17 @@ public class ChatHandler implements Listener {
         var chan = chatter.focus();
 
         if (chan == null) {
-            player.sendMessage("§cAucun canal sélectionné.§r");
+            plugin.error(player, Messages.NO_FOCUSED_CHANNEL);
             return;
         }
 
         if (chatter.muted()) {
-            player.sendMessage("§cVous avez été rendu muet.§r");
+            plugin.error(player, Messages.YOU_ARE_MUTE);
             return;
         }
 
         if (!player.hasPermission(chan.permission(Channel.Permission.SPEAK))) {
-            player.sendMessage("§cVous n'avez pas la permission de parler sur ce canal.§r");
+            plugin.error(player, Messages.NO_SPEAK_PERMISSION, "{channel}", chan.name());
             return;
         }
         chan.broadcast(player.getName(), msg);

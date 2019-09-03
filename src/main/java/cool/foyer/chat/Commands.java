@@ -36,7 +36,7 @@ public class Commands extends BaseCommand {
     @CommandCompletion("@channels")
     public void cmdSwitch(Chatter chatter, Channel chan) {
         if (!chatter.channels().contains(chan)) {
-            throw new InvalidCommandArgument("Canal non-rejoint.", false);
+            throw new InvalidCommandArgument(Messages.CHANNEL_NOT_JOINED, false);
         }
         chatter.focus(chan);
     }
@@ -53,7 +53,7 @@ public class Commands extends BaseCommand {
     @CommandCompletion("@channels_joinable")
     public void cmdJoin(Chatter chatter, Channel chan) {
         if (!chatter.player().hasPermission(chan.permission(Channel.Permission.READ))) {
-            throw new InvalidCommandArgument("Canal non-existant.", false);
+            throw new InvalidCommandArgument(Messages.CHANNEL_NONEXISTENT, false);
         }
         chan.recipients().add(chatter.player());
         chatter.channels().add(chan);

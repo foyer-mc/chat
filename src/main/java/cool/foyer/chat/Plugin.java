@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,11 @@ import lombok.*;
 import co.aikar.commands.BungeeCommandManager;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
+import co.aikar.commands.MessageType;
+import co.aikar.locales.MessageKeyProvider;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -36,6 +40,7 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
     private final Map<ProxiedPlayer, Chatter> chatters = new HashMap<>();
     private final Map<String, Channel> channels = new HashMap<>();
     private Configuration config;
+    private BungeeCommandManager cmdManager;
 
     private String defaultTemplate;
     private List<Channel> defaultChannels = new ArrayList<>();
@@ -91,14 +96,16 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         var pm = getProxy().getPluginManager();
         pm.registerListener(this, new ChatHandler(this));
 
-        var cmdManager = new BungeeCommandManager(this);
+        cmdManager = new BungeeCommandManager(this);
 
         cmdManager.enableUnstableAPI("help");
+
+        cmdManager.getLocales().setDefaultLocale(Locale.FRENCH);
 
         cmdManager.getCommandContexts().registerContext(Channel.class, c -> {
             var chan = channels.get(c.popFirstArg());
             if (chan == null) {
-                throw new InvalidCommandArgument("Canal non-existant.", false);
+                throw new InvalidCommandArgument(Messages.CHANNEL_NONEXISTENT, false);
             }
             return chan;
         });
@@ -127,19 +134,23 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
                     start = pos + 1;
                 }
             } catch (NumberFormatException ex) {
-                throw new InvalidCommandArgument("'" + dur.substring(start, pos) + "' n'est pas une durée valide.", true);
+                throw new InvalidCommandArgument(Messages.INVALID_DURATION, "{duration}", dur.substring(start, pos));
+            }
+            if (start <= dur.length()) {
+                throw new InvalidCommandArgument(Messages.INVALID_DURATION, "{duration}", dur);
             }
 
             return duration;
         });
 
         cmdManager.getCommandContexts().registerContext(Recipient.class, c -> {
-            if (c.getFirstArg() == null) {
+            var name = c.getFirstArg();
+            if (name == null) {
                 throw new InvalidCommandArgument(true);
             }
             var player = ProxyServer.getInstance().getPlayer(c.popFirstArg());
             if (player == null) {
-                throw new InvalidCommandArgument("Joueur non connecté", false);
+                throw new InvalidCommandArgument(Messages.RECIPIENT_OFFLINE, false, "{recipient}", name);
             }
             return new Recipient(chatters.get(player));
         });
@@ -173,6 +184,14 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
         });
 
         cmdManager.registerCommand(new Commands(this));
+    }
+
+    public void error(CommandSender recipient, MessageKeyProvider key, String... replacements) {
+        cmdManager.sendMessage(recipient, MessageType.ERROR, key.getMessageKey(), replacements);
+    }
+
+    public void info(CommandSender recipient, MessageKeyProvider key, String... replacements) {
+        cmdManager.sendMessage(recipient, MessageType.INFO, key.getMessageKey(), replacements);
     }
 
 }
