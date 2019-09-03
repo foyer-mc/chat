@@ -32,6 +32,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import cool.foyer.chat.ChatHandler;
 import cool.foyer.chat.Commands;
+import cool.foyer.chat.discord.Bot;
 
 @Accessors(fluent = true)
 @Getter
@@ -92,6 +93,24 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             defaultChannels.add(channels.get(name));
         }
         defaultFocus = channels.get(config.getString("default_focus"));
+
+        var discordConfig = config.getSection("discord");
+        var token = discordConfig.getString("token");
+        try {
+            var bot = new Bot(this, token);
+            var links = discordConfig.getSection("links");
+            for (var name : links.getKeys()) {
+                var chan = channels.get(name);
+                var id = links.getString(name);
+                if (chan != null && id != null) {
+                    bot.addLinkedChannel(id, chan);
+                }
+            }
+            bot.start();
+        } catch (javax.security.auth.login.LoginException ex) {
+            getLogger().warning("Invalid Discord token, disabling bridge");
+        }
+
 
         var pm = getProxy().getPluginManager();
         pm.registerListener(this, new ChatHandler(this));
