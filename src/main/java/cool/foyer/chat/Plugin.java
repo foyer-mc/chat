@@ -131,15 +131,21 @@ public class Plugin extends net.md_5.bungee.api.plugin.Plugin {
             return duration;
         });
 
+        cmdManager.getCommandContexts().registerContext(Recipient.class, c -> {
+            if (c.getFirstArg() == null) {
+                throw new InvalidCommandArgument(true);
+            }
+            var player = ProxyServer.getInstance().getPlayer(c.popFirstArg());
+            if (player == null) {
+                throw new InvalidCommandArgument("Joueur non connecté", false);
+            }
+            return new Recipient(chatters.get(player));
+        });
+
         cmdManager.getCommandContexts().registerIssuerAwareContext(Chatter.class, c -> {
             var sender = c.getSender();
             var player = sender instanceof ProxiedPlayer ? (ProxiedPlayer) sender : null;
-            if (c.hasFlag("other")) {
-                player = ProxyServer.getInstance().getPlayer(c.popFirstArg());
-                if (player == null) {
-                    throw new InvalidCommandArgument("Joueur non connecté", false);
-                }
-            } else if (player == null) {
+            if (player == null) {
                 throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
             }
             return chatters.get(player);

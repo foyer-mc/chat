@@ -70,18 +70,18 @@ public class Commands extends BaseCommand {
     @Subcommand("mute")
     @CommandPermission("foyer.chat.mute")
     @CommandCompletion("@players")
-    public void cmdMute(@Flags("other") Chatter target, @Optional Duration duration) {
+    public void cmdMute(Recipient target, @Optional Duration duration) {
         if (duration == null) {
             duration = ChronoUnit.FOREVER.getDuration();
         }
-        target.mutedUntil(Instant.now().plus(duration));
+        target.chatter().mutedUntil(Instant.now().plus(duration));
     }
 
     @Subcommand("unmute")
     @CommandPermission("foyer.chat.mute")
     @CommandCompletion("@players")
-    public void cmdUnmute(@Flags("other") Chatter target) {
-        target.mutedUntil(Instant.MIN);
+    public void cmdUnmute(Recipient target) {
+        target.chatter().mutedUntil(Instant.MIN);
     }
 
 }
